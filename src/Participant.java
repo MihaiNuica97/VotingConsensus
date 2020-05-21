@@ -1,4 +1,8 @@
-import java.io.IOException;
+import sun.security.x509.IPAddressName;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.net.Socket;
 
 public class Participant {
 	private static int cPort;
@@ -7,6 +11,10 @@ public class Participant {
 	private static int timeout;
 	private static ParticipantLogger logger;
 	private static Thread thread;
+	private static Socket clientSocket;
+
+
+
 
 	public static void main(String[] args) throws IOException {
 
@@ -19,6 +27,16 @@ public class Participant {
 
 
 		thread = new Thread(()->{
+			PrintWriter out;
+			BufferedReader in;
+			try {
+				clientSocket = new Socket(InetAddress.getLocalHost(), cPort);
+				out = new PrintWriter(clientSocket.getOutputStream(),true);
+				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				out.println("JOIN " + port);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			logger.startedListening();
 		});
 		thread.start();

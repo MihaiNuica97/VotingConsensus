@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 
 public class Coordinator {
@@ -8,7 +9,11 @@ public class Coordinator {
 	private static ArrayList<String> options;
 	private static int timeout;
 	private static CoordinatorLogger logger;
+	private static CoordinatorServer server;
 
+	private void start(){
+
+	}
 
 	public static void main(String[] args) throws IOException {
 		port =  Integer.parseInt(args[0]);
@@ -16,10 +21,15 @@ public class Coordinator {
 		parts = Integer.parseInt(args[2]);
 		timeout = Integer.parseInt(args[3]);
 
-		CoordinatorLogger.initLogger(loggerPort,port,500);
-		logger = CoordinatorLogger.getLogger();
 
-		logger.startedListening(port);
+
+		CoordinatorLogger.initLogger(loggerPort,port,timeout);
+		logger = CoordinatorLogger.getLogger();
+		server = new CoordinatorServer(port,parts,logger);
+
+
+
+
 
 
 	}

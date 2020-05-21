@@ -55,12 +55,12 @@ public class UDPLoggerClient {
 				socket.receive(newPacket);
 				received = new String(newPacket.getData(), newPacket.getOffset(), newPacket.getLength());
 				if(received.equals("ACK")){
-					System.out.println(received);
 					break;
 				}
 			}catch (SocketException e) {
 				tries--;
 			}
 		}
+		socket.close();
 	}
 }
