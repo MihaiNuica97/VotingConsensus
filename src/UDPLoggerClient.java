@@ -47,20 +47,20 @@ public class UDPLoggerClient {
 		DatagramPacket packet = new DatagramPacket(buffer,buffer.length, InetAddress.getLocalHost(),loggerServerPort);
 		socket.send(packet);
 
-		DatagramPacket newPacket = new DatagramPacket(buffer,buffer.length);
-		socket.setSoTimeout(timeout);
-		String received;
-		while(tries > 0) {
-			try {
-				socket.receive(newPacket);
-				received = new String(newPacket.getData(), newPacket.getOffset(), newPacket.getLength());
-				if(received.equals("ACK")){
-					break;
-				}
-			}catch (SocketException e) {
-				tries--;
-			}
-		}
+//		DatagramPacket newPacket = new DatagramPacket(buffer,buffer.length);
+//		socket.setSoTimeout(timeout);
+//		String received;
+//		while(tries > 0) {
+//			try {
+//				socket.receive(newPacket);
+//				received = new String(newPacket.getData(), newPacket.getOffset(), newPacket.getLength());
+//				if(received.equals("ACK")){
+//					break;
+//				}
+//			}catch (SocketException e) {
+//				tries--;
+//			}
+//		}
 		socket.close();
 	}
 }

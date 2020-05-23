@@ -1,8 +1,4 @@
-import sun.security.x509.IPAddressName;
-
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -14,8 +10,8 @@ public class Participant {
 	private static ParticipantLogger logger;
 	private static Thread thread;
 
-	private static Connection connection;
-
+	private static Connection serverConnection;
+	private static ParticipantServer server;
 
 
 	public static void main(String[] args) throws IOException {
@@ -32,25 +28,25 @@ public class Participant {
 			try {
 //				JOIN
 				Socket clientSocket = new Socket("localhost", cPort);
-				connection = new Connection(clientSocket);
-				connection.port = port;
-				logger.startedListening();
+				serverConnection = new Connection(clientSocket);
+				serverConnection.port = port;
+				logger.connectionEstablished(cPort);
 				logger.joinSent(cPort);
-				connection.out.println("JOIN " + port);
+				serverConnection.out.println("JOIN " + port);
 //				DETAILS
 				ArrayList<Integer> otherParts = new ArrayList<>();
-				String[] details = connection.getInput();
+				String[] details = serverConnection.getInput();
 				for (int i = 1; i<(details.length); i++){
 					otherParts.add(Integer.parseInt(details[i]));
 				}
 				logger.detailsReceived(otherParts);
-				System.out.println(otherParts);
-//				ServerSocket serverSocket = new ServerSocket(port);
-//				Socket newClientSocket = serverSocket.accept();
+
+				server = new ParticipantServer(port,otherParts,logger);
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+//			System.exit(0);
 		}).start();
 
 	}
