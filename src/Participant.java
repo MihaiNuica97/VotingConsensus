@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 public class Participant {
 	private static int cPort;
@@ -9,6 +11,7 @@ public class Participant {
 	private static int timeout;
 	private static ParticipantLogger logger;
 	private static Thread thread;
+	private static Vote vote;
 
 	private static Connection serverConnection;
 	private static ParticipantServer server;
@@ -29,7 +32,7 @@ public class Participant {
 //				JOIN
 				Socket clientSocket = new Socket("localhost", cPort);
 				serverConnection = new Connection(clientSocket);
-				serverConnection.port = port;
+				serverConnection.port = cPort;
 				logger.connectionEstablished(cPort);
 				logger.joinSent(cPort);
 				serverConnection.out.println("JOIN " + port);
@@ -42,6 +45,15 @@ public class Participant {
 				logger.detailsReceived(otherParts);
 
 				server = new ParticipantServer(port,otherParts,logger);
+
+
+//				VOTE_OPTIONS
+				ArrayList<String> voteOptions = new ArrayList(Arrays.asList(serverConnection.getInput()));
+				voteOptions.remove(0);
+				logger.voteOptionsReceived(voteOptions);
+				vote = new Vote(port, voteOptions.get(new Random().nextInt(voteOptions.size())));
+				System.out.println(vote.toString());
+
 
 			} catch (IOException e) {
 				e.printStackTrace();

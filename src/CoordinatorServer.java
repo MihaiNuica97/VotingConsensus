@@ -17,6 +17,7 @@ public class CoordinatorServer{
 	private CoordinatorLogger logger;
 	private ServerSocket socket;
 	private ArrayList<Connection> connections;
+	private ArrayList<String> options;
 
 	private class ClientHandler extends Thread{
 		private ServerSocket socket;
@@ -33,7 +34,6 @@ public class CoordinatorServer{
 			Socket clientSocket;
 			PrintWriter out;
 			BufferedReader in;
-
 			logger.startedListening(port);
 
 			// JOIN phase
@@ -53,6 +53,7 @@ public class CoordinatorServer{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+
 			}
 
 //			DETAILS phase
@@ -66,15 +67,31 @@ public class CoordinatorServer{
 					}
 				}
 				logger.detailsSent(connection.port,detailsList);
-				connection.out.println(details);
+				connection.send(details);
+			}
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+//			VOTE_OPTIONS phase
+			String voteString = "VOTE_OPTIONS";
+			for(String option: options){
+				voteString = voteString + " " + option;
+			}
+
+			for(Connection connection: connections){
+				logger.voteOptionsSent(connection.port,options);
+				connection.send(voteString);
 			}
 		}
 	}
 
-	public CoordinatorServer(int port, int parts, CoordinatorLogger logger) throws IOException {
+	public CoordinatorServer(int port, int parts, CoordinatorLogger logger, ArrayList<String>options) throws IOException {
 		this.port = port;
 		this.parts = parts;
 		this.logger = logger;
+		this.options = options;
 		connections = new ArrayList<Connection>();
 		socket = new ServerSocket(port);
 

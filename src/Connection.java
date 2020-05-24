@@ -21,4 +21,10 @@ public class Connection {
 		return in.readLine().split(" ");
 	}
 
+	public String getInputRaw() throws  IOException{
+		return in.readLine();
+	}
+	public void send(String message){
+		out.println(message);
+	}
 }

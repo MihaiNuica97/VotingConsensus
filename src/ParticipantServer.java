@@ -15,11 +15,6 @@ public class ParticipantServer {
 
 	private class IncomingHandler extends Thread{
 
-
-		public IncomingHandler(){
-
-		}
-
 		public void run(){
 
 			while(incoming.size() < otherParts.size()){
@@ -85,8 +80,6 @@ public class ParticipantServer {
 				e.printStackTrace();
 			}
 		}
-		System.out.print("Part "+ port + " has established all connections");
-
 
 	}
 
