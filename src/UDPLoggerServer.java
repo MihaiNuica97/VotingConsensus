@@ -7,26 +7,28 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class UDPLoggerServer {
 	private static int port;
 	private static Thread loggerThread;
+
 
 	private static void listen(int port) throws IOException {
 		DatagramSocket socket = new DatagramSocket(port);
 		byte[] buffer = new byte[400];
 		System.out.println("Listening on port " + port);
 		String ack = "ACK";
-		FileOutputStream output = new FileOutputStream("logfile.txt");
+		FileOutputStream output = new FileOutputStream("logger_server_"+System.currentTimeMillis()+".log");
 
 		while(true){
 			DatagramPacket packet = new DatagramPacket(buffer,buffer.length);
 			socket.receive(packet);
 			InetAddress address = packet.getAddress();
-			int clientPort = packet.getPort();
-			String received = new String(packet.getData(), packet.getOffset(), packet.getLength());
 
-			String log = clientPort +" "+ System.currentTimeMillis() +" " + received+ System.getProperty("line.separator");
+			String received = new String(packet.getData(), packet.getOffset(), packet.getLength());
+			int clientPort = Integer.parseInt(received.split(" ")[0]);
+			String log = clientPort +" "+ System.currentTimeMillis() +" " + received.replaceFirst(received.split(" ")[0],"")+ System.getProperty("line.separator");
 			System.out.println(log);
 			output.write(log.getBytes());
 

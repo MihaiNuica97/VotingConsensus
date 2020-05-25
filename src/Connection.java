@@ -26,5 +26,6 @@ public class Connection {
 	}
 	public void send(String message){
 		out.println(message);
+		out.flush();
 	}
 }

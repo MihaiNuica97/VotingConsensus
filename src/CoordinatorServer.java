@@ -49,6 +49,7 @@ public class CoordinatorServer{
 							connections.add(connection);
 							connection.port = Integer.parseInt(input[1]);
 							logger.joinReceived(connection.port);
+							logger.connectionAccepted(connection.port);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -67,6 +68,7 @@ public class CoordinatorServer{
 					}
 				}
 				logger.detailsSent(connection.port,detailsList);
+				logger.messageSent(connection.port,details);
 				connection.send(details);
 			}
 			try {
@@ -82,7 +84,22 @@ public class CoordinatorServer{
 
 			for(Connection connection: connections){
 				logger.voteOptionsSent(connection.port,options);
+				logger.messageSent(connection.port,voteString);
 				connection.send(voteString);
+			}
+//			OUTCOME phase
+			for(Connection connection:connections){
+				new Thread(()->{
+					try {
+						String message = connection.getInputRaw();
+						String[] msg = message.split(" ");
+						logger.messageReceived(connection.port,message);
+						logger.outcomeReceived(connection.port,msg[1]);
+					} catch (Exception e) {
+						logger.participantCrashed(connection.port);
+//						e.printStackTrace();
+					}
+				}).start();
 			}
 		}
 	}

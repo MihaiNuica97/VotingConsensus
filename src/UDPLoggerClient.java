@@ -1,8 +1,5 @@
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.*;
 
 public class UDPLoggerClient {
 	
@@ -40,7 +37,8 @@ public class UDPLoggerClient {
 	 * @throws IOException
 	 */
 	public void logToServer(String message) throws IOException {
-
+		message = processId + " " + message;
+//		System.out.println(message);
 		byte[] buffer = message.getBytes();
 		int tries = 3;
 		DatagramSocket socket = new DatagramSocket();
@@ -48,16 +46,17 @@ public class UDPLoggerClient {
 		socket.send(packet);
 
 		DatagramPacket newPacket = new DatagramPacket(buffer,buffer.length);
-		socket.setSoTimeout(timeout);
 		String received;
 		while(tries > 0) {
 			try {
+				socket.setSoTimeout(timeout);
 				socket.receive(newPacket);
 				received = new String(newPacket.getData(), newPacket.getOffset(), newPacket.getLength());
 				if(received.equals("ACK")){
 					break;
 				}
-			}catch (SocketException e) {
+			}catch (SocketException | SocketTimeoutException e) {
+//				e.printStackTrace();
 				tries--;
 			}
 		}
